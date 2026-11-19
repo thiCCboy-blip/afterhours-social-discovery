@@ -1,88 +1,242 @@
-# AFTERHOURS — AI-powered social coordination
+# AFTERHOURS 🌙
+### Find your frequency. Meet your people.
 
-An independent portfolio project inspired by the public Misfits hiring brief. It is not affiliated with Misfits and does not represent its actual product.
+**AFTERHOURS** is an independent product-building experiment exploring how interest-based discovery and AI-assisted planning can help people turn shared interests into real-world meetups.
 
-## What works
-- Discover sample people by shared interests.
-- Generate a meetup plan from natural language.
-- Create and list meetups.
-- Simulate unanswered RSVPs.
-- Run an Anti-Ghosting recovery recommendation.
-- Works without an LLM key using a deterministic fallback.
-- Optional OpenAI-compatible model integration on the backend.
+Instead of stopping at discovering people, AFTERHOURS explores the journey from finding common ground to proposing a plan, organising a meetup, and recovering when coordination goes quiet.
+
+> An independent portfolio project inspired by a social-product problem space. Not affiliated with, endorsed by, or representative of Misfits.
+
+---
+
+## The Product
+
+Finding people with shared interests is only the beginning. Turning that connection into an actual plan introduces another set of challenges: deciding what to do, coordinating logistics, getting responses, and keeping the plan alive.
+
+AFTERHOURS explores this journey through four connected experiences:
+
+1. **Discover** people through shared interests and profile information.
+2. **Plan** activities using a natural-language planning assistant.
+3. **Meet up** by turning a proposed plan into a saved meetup draft.
+4. **Recover** when simulated RSVPs go unanswered, with practical next-step recommendations.
+
+## Features
+
+### 1. Interest-based discovery
+- Browse fictional sample profiles.
+- Filter profiles by interests.
+- Calculate an interest-overlap score using Jaccard similarity.
+- Show shared interests as an explanation for the score.
+- Rank profiles by interest overlap.
+- Save profiles and revisit them later.
+- Persist saved profiles and personal interests in browser local storage.
+
+**Matching note:** The current compatibility score is a transparent set-overlap calculation. It is not a trained recommendation model or a measure of personal compatibility.
+
+### 2. AI-assisted meetup planning
+- Describe an activity in natural language.
+- Generate a structured meetup proposal.
+- Produce suggested activity, time, location, estimated budget, group size, description and checklist.
+- Optionally use an OpenAI model through the backend.
+- Fall back to a deterministic planning function when the model is unavailable.
+
+The planning assistant proposes ideas. It does not book venues, verify live availability, contact people or make payments.
+
+### 3. Meetup management
+- Convert a generated proposal into a meetup draft.
+- Store meetup records in SQLite.
+- Retrieve previously created meetup drafts.
+- Track basic meetup status and unanswered RSVP counts.
+
+### 4. Anti-Ghosting recovery
+- Simulate unanswered RSVPs for a meetup.
+- Generate practical recovery suggestions.
+- Recommend low-pressure follow-ups and alternate times.
+- Update the meetup's recovery status.
+
+This is a simulated coordination workflow. It does not send messages or contact real participants.
+
+---
+
+## Product walkthrough
+
+The intended demo journey:
+
+1. Open Discover and browse the sample profiles.
+2. Explore shared interests and save a profile.
+3. Open the planner and enter a request such as:
+
+   `I want to play badminton this Sunday morning with 3 people, under ₹500 each.`
+
+4. Generate a meetup proposal.
+5. Review the details and create a meetup draft.
+6. Open the Meetups section.
+7. Open Anti-Ghosting, simulate unanswered RSVPs and generate a recovery recommendation.
+
+---
+
+## Technology Stack
+
+| Layer | Technology |
+|---|---|
+| Frontend framework | Next.js |
+| UI library | React |
+| Language | TypeScript |
+| Styling | CSS |
+| Animation | Framer Motion |
+| Icons | Lucide React |
+| Backend | Python, FastAPI |
+| Data validation | Pydantic |
+| Database | SQLite |
+| Optional model integration | OpenAI Python SDK |
 
 ## Architecture
-- `frontend/`: Next.js App Router, TypeScript, CSS, Framer Motion, Lucide icons.
-- `backend/`: FastAPI, SQLite, Pydantic, optional OpenAI SDK.
-- Browser talks only to FastAPI. Keep model/API secrets on the backend.
 
-## Run locally
-
-### 1. Backend
-```bash
-cd backend
-python -m venv .venv
-# Windows PowerShell: .venv\\Scripts\\Activate.ps1
-# macOS/Linux: source .venv/bin/activate
-pip install -r requirements.txt
-cp .env.example .env  # optional; leave OPENAI_API_KEY blank for demo mode
-uvicorn app.main:app --reload --port 8000
+```text
+┌──────────────────────────────┐
+│       Next.js Frontend       │
+│                              │
+│ Discover · Planner · Meetups │
+│       Anti-Ghosting          │
+└──────────────┬───────────────┘
+               │ HTTP / JSON
+               ▼
+┌──────────────────────────────┐
+│        FastAPI Backend       │
+│                              │
+│ Discovery · Planning         │
+│ Meetup Management · Recovery │
+└───────┬──────────────┬───────┘
+        │              │
+        ▼              ▼
+┌──────────────┐  ┌────────────────┐
+│    SQLite    │  │ Optional OpenAI│
+│ Meetup data  │  │ Model provider │
+└──────────────┘  └────────────────┘
 ```
-Open http://localhost:8000/docs to inspect the API.
 
-### 2. Frontend (new terminal)
+The frontend communicates with the backend over HTTP. Optional model credentials are configured on the backend rather than exposed in client-side code.
+
+---
+
+## Run Locally
+
+### Prerequisites
+
+- Node.js and npm
+- Python 3.10 or newer
+- Git
+
+### 1. Clone the repository
+
 ```bash
+git clone https://github.com/thiCCboy-blip/afterhours-social-discovery.git
+cd afterhours-social-discovery
+```
+
+### 2. Start the backend
+
+```powershell
+cd backend
+
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+
+pip install -r requirements.txt
+
+python -m uvicorn app.main:app --reload --port 8000
+```
+
+The backend API will be available at:
+
+- API: http://localhost:8000
+- Interactive API documentation: http://localhost:8000/docs
+- Health check: http://localhost:8000/health
+
+### 3. Start the frontend
+
+Open another terminal:
+
+```powershell
 cd frontend
+
 npm install
-cp .env.local.example .env.local
 npm run dev
 ```
-Open http://localhost:3000.
 
-## Optional LLM setup
-Set `OPENAI_API_KEY` and `OPENAI_MODEL` in `backend/.env`. Set `FRONTEND_ORIGIN` to your deployed frontend origin when hosting the API. The API uses the OpenAI SDK on the server. If the key is absent or the model call fails, it falls back to deterministic planning. Never put the key in `frontend/.env.local` or client-side code.
+Open:
 
-## Demo flow for a recruiter
-1. Open the dashboard and browse the sample people.
-2. In the AI Planner, enter: `I want to play badminton this Sunday morning with 3 people, under ₹500 each.`
-3. Generate the plan and create the meetup.
-4. Open Anti-Ghosting, select a meetup, simulate unanswered RSVPs, then run recovery.
-5. Explain how the system uses structured intent, tool-like functions, explicit user approval, and a deterministic fallback.
+http://localhost:3000
 
-## Deployment notes
-- Deploy `backend/` as a Python web service with start command `uvicorn app.main:app --host 0.0.0.0 --port $PORT` and root directory `backend`.
-- Set `FRONTEND_ORIGIN` to the exact deployed frontend origin. Set `OPENAI_API_KEY` only if using a model.
-- Deploy `frontend/` as a Next.js app with root directory `frontend` and `NEXT_PUBLIC_API_URL` set to the backend URL.
-- For persistent hosted data, attach a persistent disk for SQLite or migrate to managed PostgreSQL.
+The frontend defaults to `http://localhost:8000` for its backend API. To use a different backend URL, configure `NEXT_PUBLIC_API_URL` in the frontend environment.
 
-## API endpoints
-- `GET /health`
-- `GET /api/discover`
-- `GET /api/meetups`
-- `POST /api/plan`
-- `POST /api/meetups`
-- `POST /api/meetups/{meetup_id}/simulate-no-response`
-- `POST /api/meetups/{meetup_id}/recover`
+### 4. Optional OpenAI integration
 
-## Product and safety notes
-- All people and venues are fictional seed data. Do not use the demo to contact real people.
-- Meetup creation is a local demo action; it does not book venues, charge money, or send invitations.
-- The AI suggests plans. Users approve before a meetup is created.
-- Add authentication, consent, moderation, privacy controls, rate limits, and real venue verification before any public launch.
+The backend can optionally use the OpenAI SDK for model-assisted planning.
 
-## Seven-day build schedule
-| Day | Focus | Exit criteria |
+Configure these environment variables in `backend/.env`:
+
+```env
+OPENAI_API_KEY=your_api_key
+OPENAI_MODEL=gpt-4.1-mini
+FRONTEND_ORIGIN=http://localhost:3000
+```
+
+Without a valid model configuration, the backend uses its deterministic fallback planner.
+
+**Security:** Never commit `.env` files, API keys or other credentials to GitHub.
+
+---
+
+## API Endpoints
+
+| Method | Endpoint | Purpose |
 |---|---|---|
-| 1 | Product definition, flows, visual system | Four core screens and user journey agreed |
-| 2 | Frontend shell and responsive UI | Dashboard, discovery, planner, recovery views |
-| 3 | FastAPI and data model | Health, discovery, meetup CRUD working |
-| 4 | AI planning | Structured intent and fallback/model provider |
-| 5 | Anti-Ghosting | Simulated RSVP failure and recovery suggestions |
-| 6 | Polish and testing | Mobile QA, loading/error states, demo data reset |
-| 7 | Deploy and tell the story | Public URL, GitHub README, 90-second demo |
+| GET | `/health` | Backend health check |
+| GET | `/api/discover` | Retrieve sample profiles |
+| GET | `/api/meetups` | List saved meetup drafts |
+| POST | `/api/plan` | Generate a meetup proposal |
+| POST | `/api/meetups` | Create a meetup draft |
+| POST | `/api/meetups/{meetup_id}/simulate-no-response` | Simulate unanswered RSVPs |
+| POST | `/api/meetups/{meetup_id}/recover` | Generate recovery recommendations |
 
-## Suggested portfolio evidence
-- A 60–90 second screen recording showing the full flow.
-- A short case study: problem, product hypothesis, architecture, trade-offs, test observations, next steps.
-- Screenshots of the discovery, planner, meetup, and recovery states.
-- Be transparent about simulated data and what is not production-ready.
+---
+
+## Product Decisions and Limitations
+
+AFTERHOURS is a prototype, not a production-ready social network.
+
+Current implementation boundaries:
+
+- Profiles are fictional sample data.
+- Interest matching uses Jaccard similarity rather than machine learning.
+- Personal interests and saved profiles are stored in browser local storage.
+- Meetup records are stored in SQLite.
+- RSVP non-response is simulated.
+- Recovery recommendations are generated by backend logic; no messages are sent.
+- The optional LLM integration is used for planning, not for the interest-match score.
+- Authentication, real invitations, moderation and production privacy controls are not implemented.
+- Meetup suggestions are not verified venue bookings.
+
+These boundaries are intentional parts of the prototype's scope and should be considered before production use.
+
+## Future Roadmap
+
+- User authentication and individual profiles.
+- Real user-generated interests and discovery preferences.
+- More advanced and explainable recommendation models.
+- Consent-based invitations and RSVP workflows.
+- Real-time meetup coordination.
+- Moderation, reporting and privacy controls.
+- Production database and deployment architecture.
+- Usability testing with real users.
+
+---
+
+## About This Project
+
+AFTERHOURS is an independent portfolio project built to explore product thinking, frontend development, backend API design and practical AI integration in a social coordination use case.
+
+The focus is not simply generating a plan with an LLM. It is exploring the complete experience around turning an intention into a coordinated real-world activity.
+
+**Built as an independent product experiment.**
