@@ -5,7 +5,7 @@
 
 Instead of stopping at discovering people, AFTERHOURS explores the journey from finding common ground to proposing a plan, organising a meetup, and recovering when coordination goes quiet.
 
-> An independent portfolio project inspired by a social-product problem space. Not affiliated with, endorsed by, or representative of Misfits.
+> An independent portfolio project inspired by a social-product problem space.
 
 ---
 
@@ -232,11 +232,3 @@ These boundaries are intentional parts of the prototype's scope and should be co
 - Usability testing with real users.
 
 ---
-
-## About This Project
-
-AFTERHOURS is an independent portfolio project built to explore product thinking, frontend development, backend API design and practical AI integration in a social coordination use case.
-
-The focus is not simply generating a plan with an LLM. It is exploring the complete experience around turning an intention into a coordinated real-world activity.
-
-**Built as an independent product experiment.**
