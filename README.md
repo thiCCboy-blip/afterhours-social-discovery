@@ -5,7 +5,7 @@
 
 Instead of stopping at discovering people, AFTERHOURS explores the journey from finding common ground to proposing a plan, organising a meetup, and recovering when coordination goes quiet.
 
-> An independent portfolio project inspired by a social-product problem space. Not affiliated with, endorsed by, or representative of Misfits.
+> An independent portfolio project inspired by a social-product problem space.
 
 ---
 
